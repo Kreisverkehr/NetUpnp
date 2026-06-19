@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackageId>Kreisverkehr.NetUpnp</PackageId>
+    <Title>NetUpnp</Title>
+    <Description>NetUpnp is a small .NET library for working with Universal Plug and Play (UPnP).</Description>
+    <Summary>Lightweight .NET UPnP client library.</Summary>
+    <Version>0.0.0</Version>
+    <Authors>Kreisverkehr</Authors>
+    <Company>Kreisverkehr</Company>
+    <Copyright>Copyright (c) 2026 Kreisverkehr</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Kreisverkehr/NetUpnp</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.9" />
+    <PackageReference Include="Kreisverkehr.NetSsdp" Version="0.1.*" />
+  </ItemGroup>
+
+</Project>
