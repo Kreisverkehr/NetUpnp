@@ -27,16 +27,16 @@ public class UpnpDeviceDiscoveredEventArgs : EventArgs
 
 public class UpnpClient : IUpnpClient
 {
-    private readonly ISsdpServiceCollection _ssdoServiceCollection;
+    private readonly ISsdpServiceCollection _ssdpServiceCollection;
     private readonly ISsdpClient _ssdpClient;
     private readonly HttpClient _httpClient;
     private readonly UpnpOptions _options;
     private readonly XmlSerializer _descriptionSerializer;
 
-    public UpnpClient(ISsdpServiceCollection ssdoServiceCollection, ISsdpClient ssdpClient, HttpClient httpClient, IOptions<UpnpOptions> options)
+    public UpnpClient(ISsdpServiceCollection ssdpServiceCollection, ISsdpClient ssdpClient, HttpClient httpClient, IOptions<UpnpOptions> options)
     {
-        _ssdoServiceCollection = ssdoServiceCollection;
-        _ssdoServiceCollection.ServiceDiscovered += ServiceDiscovered;
+        _ssdpServiceCollection = ssdpServiceCollection;
+        _ssdpServiceCollection.ServiceDiscovered += ServiceDiscovered;
         _ssdpClient = ssdpClient;
         _httpClient = httpClient;
         _options = options.Value;
