@@ -6,6 +6,7 @@
 #:package Microsoft.Extensions.Logging@10.0.*
 #:package Microsoft.Extensions.Logging.Console@10.0.*
 
+using ConsoleTableExt;
 using Kreisverkehr.NetUpnp;
 using Kreisverkehr.NetUpnp.Model;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,17 +22,31 @@ IServiceProvider services = new ServiceCollection()
 ;
 
 IUpnpClient upnpClient = services.GetRequiredService<IUpnpClient>();
-// upnpClient.DeviceDiscovered += (sender, e) =>
-// {
-//     Console.WriteLine($"Discovered device: {e.Device.FriendlyName} ({e.Device.DeviceType})");
-// };
-
-await foreach (UpnpDevice device in upnpClient.DiscoverDevicesAsync())
+IUpnpDeviceCollection deviceCollection = services.GetRequiredService<IUpnpDeviceCollection>();
+upnpClient.DeviceDiscovered += (sender, e) =>
 {
-    Console.WriteLine($"Discovered device: {device.FriendlyName} ({device.DeviceType})");
-}
+    Console.WriteLine($"Discovered device: {e.Device.FriendlyName} ({e.Device.DeviceType})");
+};
+
+await upnpClient.RunDiscoverDevicesAsync("ssdp:all", 3, true);
+
+ConsoleTableBuilder
+    .From(deviceCollection
+        .Select(d => new DeviceInfo(
+            FriendlyName: d.FriendlyName,
+            DeviceType: d.DeviceType,
+            Manufacturer: d.Manufacturer,
+            ModelName: d.ModelName,
+            UniqueDeviceName: d.UniqueDeviceName
+        ))
+        .ToList())
+    .WithColumn("Friendly Name", "Device Type", "Manufacturer", "Model Name", "Unique Device Name")
+    .WithTitle("Discovered UPnP Devices")
+    .ExportAndWriteLine();
 
 ConsoleKeyInfo key;
 while((key = Console.ReadKey()).Key != ConsoleKey.Enter)
 {
 }
+
+record DeviceInfo(string FriendlyName, string DeviceType, string Manufacturer, string ModelName, string UniqueDeviceName);

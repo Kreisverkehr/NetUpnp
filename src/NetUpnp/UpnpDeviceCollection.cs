@@ -11,7 +11,7 @@ public interface IUpnpDeviceCollection : IReadOnlyCollection<UpnpDevice>
 
 public class UpnpDeviceCollection : IUpnpDeviceCollection
 {
-    private readonly ConcurrentBag<UpnpDevice> _devices = new ConcurrentBag<UpnpDevice>();
+    private readonly ConcurrentDictionary<string, UpnpDevice> _devices = new ConcurrentDictionary<string, UpnpDevice>();
     private readonly IUpnpClient _client;
 
     public int Count => _devices.Count;
@@ -24,16 +24,12 @@ public class UpnpDeviceCollection : IUpnpDeviceCollection
 
     public void AddDevice(UpnpDevice device)
     {
-        _devices.Add(device);
-        foreach(var subDevice in device.Devices)
-        {
-            AddDevice(subDevice);
-        }
+        _devices.AddOrUpdate(device.UniqueDeviceName, device, (key, oldValue) => oldValue.UpdateDevice(device));
     }
 
     public IEnumerator<UpnpDevice> GetEnumerator()
     {
-        return _devices.GetEnumerator();
+        return _devices.Values.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

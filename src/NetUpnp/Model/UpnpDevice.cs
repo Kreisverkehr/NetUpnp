@@ -2,7 +2,7 @@ using System.Xml.Serialization;
 
 namespace Kreisverkehr.NetUpnp.Model;
 
-public class UpnpDevice
+public class UpnpDevice : IEquatable<UpnpDevice>
 {
     [XmlElement("deviceType", Namespace = "urn:schemas-upnp-org:device-1-0")]
     public virtual required string DeviceType { get; set; }
@@ -51,4 +51,42 @@ public class UpnpDevice
 
     [XmlElement("presentationURL", Namespace = "urn:schemas-upnp-org:device-1-0")]
     public virtual string? PresentationUrl { get; set; }
+
+    internal UpnpDevice UpdateDevice(UpnpDevice newDevice)
+    {
+        DeviceType = newDevice.DeviceType;
+        FriendlyName = newDevice.FriendlyName;
+        Manufacturer = newDevice.Manufacturer;
+        ManufacturerUrl = newDevice.ManufacturerUrl;
+        ModelDescription = newDevice.ModelDescription;
+        ModelName = newDevice.ModelName;
+        ModelNumber = newDevice.ModelNumber;
+        ModelUrl = newDevice.ModelUrl;
+        SerialNumber = newDevice.SerialNumber;
+        UniqueDeviceName = newDevice.UniqueDeviceName;
+        UniversalProductCode = newDevice.UniversalProductCode;
+        Icons = newDevice.Icons;
+        Services = newDevice.Services;
+        Devices = newDevice.Devices;
+        PresentationUrl = newDevice.PresentationUrl;
+        return this;
+    }
+
+    public bool Equals(UpnpDevice? other) 
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return UniqueDeviceName == other.UniqueDeviceName;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if(obj is UpnpDevice other)
+        {
+            return Equals(other);
+        }
+        return false;
+    }
+
+    override public int GetHashCode() => UniqueDeviceName.GetHashCode();
 }

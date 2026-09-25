@@ -11,6 +11,7 @@ public static class UpnpServiceCollectionExtensions
     public static IServiceCollection AddUpnp(this IServiceCollection services) => services
         .AddSsdp()
         .AddSingleton<IUpnpClient, UpnpClient>()
+        .AddSingleton<IUpnpDeviceCollection, UpnpDeviceCollection>()
         .AddHttpClient()
     ;
 
