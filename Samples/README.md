@@ -11,11 +11,11 @@ Both samples perform network discovery, so they must be run on a network where U
 
 ## DiscoverDevices.cs
 
-Discovers all available UPnP devices (`ssdp:all`), prints each device as it is found, and displays a table with basic device metadata.
+Discovers all available UPnP devices (`ssdp:all`), prints each device as it is found, and displays a table with basic device metadata. The sample resolves `IUpnpClient<UpnpDescription>` and reads the returned `(Uri, UpnpDescription)` tuples so the service description URL remains available alongside the parsed XML model.
 
 ## CustomizeUpnpDescription.cs
 
-Discovers SAT>IP server devices and demonstrates mapping vendor-specific XML elements into custom `UpnpDescription` and `UpnpDevice` types. It prints the SAT>IP capabilities and M3U URL when those values are present.
+Discovers SAT>IP server devices and demonstrates mapping vendor-specific XML elements into custom `UpnpDescription` and `UpnpDevice` types via `IUpnpClient<SapIpServerDescription>`. It prints the SAT>IP capabilities and M3U URL when those values are present.
 
 > [!WARNING]
 > NetUpnp is a work in progress. The samples and API may change as the project develops.

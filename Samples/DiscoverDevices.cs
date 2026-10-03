@@ -21,11 +21,11 @@ IServiceProvider services = new ServiceCollection()
     .BuildServiceProvider()
 ;
 
-IUpnpClient upnpClient = services.GetRequiredService<IUpnpClient>();
+IUpnpClient<UpnpDescription> upnpClient = services.GetRequiredService<IUpnpClient<UpnpDescription>>();
 IUpnpDeviceCollection deviceCollection = services.GetRequiredService<IUpnpDeviceCollection>();
 upnpClient.DeviceDiscovered += (sender, e) =>
 {
-    Console.WriteLine($"Discovered device: {e.Device.FriendlyName} ({e.Device.DeviceType})");
+    Console.WriteLine($"Discovered device: {e.ServiceDescription.Device.FriendlyName} ({e.ServiceDescription.Device.DeviceType})");
 };
 
 await upnpClient.RunDiscoverDevicesAsync("ssdp:all", 3, true);
@@ -33,11 +33,11 @@ await upnpClient.RunDiscoverDevicesAsync("ssdp:all", 3, true);
 ConsoleTableBuilder
     .From(deviceCollection
         .Select(d => new DeviceInfo(
-            FriendlyName: d.FriendlyName,
-            DeviceType: d.DeviceType,
-            Manufacturer: d.Manufacturer,
-            ModelName: d.ModelName,
-            UniqueDeviceName: d.UniqueDeviceName
+            FriendlyName: d.Item2.Device.FriendlyName,
+            DeviceType: d.Item2.Device.DeviceType,
+            Manufacturer: d.Item2.Device.Manufacturer,
+            ModelName: d.Item2.Device.ModelName,
+            UniqueDeviceName: d.Item2.Device.UniqueDeviceName
         ))
         .ToList())
     .WithColumn("Friendly Name", "Device Type", "Manufacturer", "Model Name", "Unique Device Name")

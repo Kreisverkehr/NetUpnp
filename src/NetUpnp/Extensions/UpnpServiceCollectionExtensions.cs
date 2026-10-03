@@ -1,4 +1,5 @@
 using Kreisverkehr.NetUpnp;
+using Kreisverkehr.NetUpnp.Model;
 using Kreisverkehr.NetUpnp.Options;
 using Microsoft.Extensions.Configuration;
 
@@ -11,6 +12,9 @@ public static class UpnpServiceCollectionExtensions
     public static IServiceCollection AddUpnp(this IServiceCollection services) => services
         .AddSsdp()
         .AddSingleton<IUpnpClient, UpnpClient>()
+        .AddTransient(typeof(IUpnpClient<>), typeof(UpnpClient<>))
+        .AddSingleton<IUpnpDescriptionCollection, UpnpDescriptionCollection>()
+        .AddSingleton(typeof(IUpnpDeviceCollection<>), typeof(UpnpDeviceCollection<>))
         .AddSingleton<IUpnpDeviceCollection, UpnpDeviceCollection>()
         .AddHttpClient()
     ;

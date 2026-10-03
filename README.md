@@ -18,7 +18,31 @@ dotnet add package Kreisverkehr.NetUpnp
 
 ## Quick start
 
-Register NetUpnp with the Microsoft dependency injection container and enumerate discovered devices:
+Register NetUpnp with the Microsoft dependency injection container and enumerate discovered devices as typed XML descriptions:
+
+```csharp
+using Kreisverkehr.NetUpnp;
+using Kreisverkehr.NetUpnp.Model;
+using Microsoft.Extensions.DependencyInjection;
+
+IServiceProvider services = new ServiceCollection()
+    .AddUpnp()
+    .BuildServiceProvider();
+
+IUpnpClient<UpnpDescription> upnpClient = services.GetRequiredService<IUpnpClient<UpnpDescription>>();
+
+await foreach ((Uri location, UpnpDescription description) in upnpClient.DiscoverDevicesAsync("ssdp:all"))
+{
+    Console.WriteLine($"{description.Device.FriendlyName} ({description.Device.DeviceType})");
+    Console.WriteLine($"Description at {location}");
+}
+```
+
+`DiscoverDevicesAsync` uses SSDP discovery and yields the service description location together with the parsed description. The raw `IUpnpClient` interface also exposes a `XDocument`-based flow when you want to inspect the untyped XML. `RunDiscoverDevicesAsync` remains available for event-driven discovery through the `DeviceDiscovered` event.
+
+## Custom descriptions
+
+UPnP devices can expose vendor-specific XML elements. Derive your own description and device model classes from `UpnpDescription` and `UpnpDevice`, then resolve the generic `IUpnpClient<TDescription>` for the specific type you want to deserialize:
 
 ```csharp
 using Kreisverkehr.NetUpnp;
@@ -28,28 +52,17 @@ IServiceProvider services = new ServiceCollection()
     .AddUpnp()
     .BuildServiceProvider();
 
-IUpnpClient upnpClient = services.GetRequiredService<IUpnpClient>();
+IUpnpClient<MyUpnpDescription> upnpClient = services.GetRequiredService<IUpnpClient<MyUpnpDescription>>();
 
-await foreach (var device in upnpClient.DiscoverDevicesAsync("ssdp:all"))
+await foreach ((Uri location, MyUpnpDescription description) in upnpClient.DiscoverDevicesAsync("urn:example:device:MyDevice:1"))
 {
-    Console.WriteLine($"{device.FriendlyName} ({device.DeviceType})");
+    MyUpnpDevice device = (MyUpnpDevice)description.Device;
+    Console.WriteLine($"{device.FriendlyName}: {device.CustomValue}");
+    Console.WriteLine($"Description at {location}");
 }
 ```
 
-`DiscoverDevicesAsync` uses SSDP discovery and yields devices as their descriptions are retrieved. The `IUpnpClient` also exposes `RunDiscoverDevicesAsync` for event-based discovery through the `DeviceDiscovered` event.
-
-## Custom descriptions
-
-UPnP devices can expose vendor-specific XML elements. Pass a custom description type to `AddUpnp` when those elements need to be deserialized into custom model classes:
-
-```csharp
-services.AddUpnp(options =>
-{
-    options.DescriptionType = typeof(MyUpnpDescription);
-});
-```
-
-The custom description and device types should derive from `UpnpDescription` and `UpnpDevice`, and use `XmlSerializer` attributes for their XML elements. See the sample in [`Samples/CustomizeUpnpDescription.cs`](Samples/CustomizeUpnpDescription.cs).
+The custom description and device types should use `XmlSerializer` attributes for their XML elements. See the sample in [`Samples/CustomizeUpnpDescription.cs`](Samples/CustomizeUpnpDescription.cs).
 
 ## Samples
 

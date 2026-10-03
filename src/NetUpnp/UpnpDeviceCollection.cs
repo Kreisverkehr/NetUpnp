@@ -1,35 +1,36 @@
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Xml.Serialization;
 using Kreisverkehr.NetUpnp.Model;
 
 namespace Kreisverkehr.NetUpnp;
 
-public interface IUpnpDeviceCollection : IReadOnlyCollection<UpnpDevice>
+public interface IUpnpDeviceCollection : IUpnpDeviceCollection<UpnpDescription>;
+public interface IUpnpDeviceCollection<T> : IReadOnlyCollection<Tuple<Uri, T>> where T : UpnpDescription { }
+public class UpnpDeviceCollection(IUpnpDescriptionCollection descriptionCollection) 
+    : UpnpDeviceCollection<UpnpDescription>(descriptionCollection), IUpnpDeviceCollection { }
+
+public class UpnpDeviceCollection<T> : IUpnpDeviceCollection<T> where T : UpnpDescription
 {
-    void AddDevice(UpnpDevice device);
-}
+    private readonly IUpnpDescriptionCollection _descriptionCollection;
+    private readonly XmlSerializer _descriptionSerializer = new(typeof(T));
 
-public class UpnpDeviceCollection : IUpnpDeviceCollection
-{
-    private readonly ConcurrentDictionary<string, UpnpDevice> _devices = new ConcurrentDictionary<string, UpnpDevice>();
-    private readonly IUpnpClient _client;
-
-    public int Count => _devices.Count;
-
-    public UpnpDeviceCollection(IUpnpClient client)
+    public UpnpDeviceCollection(IUpnpDescriptionCollection descriptionCollection)
     {
-        _client = client;
-        _client.DeviceDiscovered += (sender, args) => AddDevice(args.Device);
+        _descriptionCollection = descriptionCollection;
     }
 
-    public void AddDevice(UpnpDevice device)
-    {
-        _devices.AddOrUpdate(device.UniqueDeviceName, device, (key, oldValue) => oldValue.UpdateDevice(device));
-    }
+    public int Count => _descriptionCollection.Count;
 
-    public IEnumerator<UpnpDevice> GetEnumerator()
+    public IEnumerator<Tuple<Uri, T>> GetEnumerator()
     {
-        return _devices.Values.GetEnumerator();
+        var descriptions = 
+            from descriptionDict in _descriptionCollection
+            from kvp in descriptionDict
+            let description = (T)_descriptionSerializer.Deserialize(kvp.Value.CreateReader())!
+            select new Tuple<Uri, T>(kvp.Key, description);
+
+        return descriptions.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

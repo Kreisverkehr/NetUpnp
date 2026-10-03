@@ -17,23 +17,19 @@ IServiceProvider services = new ServiceCollection()
         .AddConsole()
         .SetMinimumLevel(LogLevel.Information)
     )
-    .AddUpnp( options =>
-    {
-        options.DescriptionType = typeof(SapIpServerDescription);
-    })
+    .AddUpnp()
     .BuildServiceProvider()
 ;
 
-IUpnpClient upnpClient = services.GetRequiredService<IUpnpClient>();
+IUpnpClient<SapIpServerDescription> upnpClient = services.GetRequiredService<IUpnpClient<SapIpServerDescription>>();
 
-await foreach (UpnpDevice device in upnpClient.DiscoverDevicesAsync("urn:ses-com:device:SatIPServer:1"))
+await foreach ((Uri location, SapIpServerDescription desc) in upnpClient.DiscoverDevicesAsync("urn:ses-com:device:SatIPServer:1"))
 {
+    SapIpServerDevice device = (SapIpServerDevice)desc.Device;
     Console.WriteLine($"Discovered device: {device.FriendlyName} ({device.DeviceType})");
-    if(device is SapIpServerDevice sapIpServerDevice)
-    {
-        Console.WriteLine($"SAT>IP Capabilities: {sapIpServerDevice.SatIpCapabilities}");
-        Console.WriteLine($"SAT>IP M3U: {sapIpServerDevice.SatIpM3U}");
-    }
+    Console.WriteLine($"Service Description at {location}");
+    Console.WriteLine($"SAT>IP Capabilities: {device.SatIpCapabilities}");
+    Console.WriteLine($"SAT>IP M3U: {device.SatIpM3U}");
 }
 
 [XmlRoot("root", Namespace = "urn:schemas-upnp-org:device-1-0")]
