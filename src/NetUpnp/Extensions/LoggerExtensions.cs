@@ -16,15 +16,23 @@ internal static partial class LoggerExtensions
         EventId = 2000,
         EventName = "UPNP description loaded",
         Level = LogLevel.Information,
-        Message = "A new UPNP device description has been loaded from location {uri}"
+        Message = "A new UPNP device description has been loaded from location {uri} for device {udn}"
         )]
-    internal static partial void LogDescriptionLoaded(this ILogger logger, Uri uri);
+    internal static partial void LogDescriptionLoaded(this ILogger logger, Uri uri, string udn);
+
+    [LoggerMessage(
+        EventId = 2010,
+        EventName = "UPNP description updated",
+        Level = LogLevel.Debug,
+        Message = "A new UPNP device description has been updated from location {uri} for device {udn}"
+        )]
+    internal static partial void LogDescriptionUpdated(this ILogger logger, Uri uri, string udn);
 
     [LoggerMessage(
         EventId = 2100,
         EventName = "UPNP description load failed",
         Level = LogLevel.Warning,
-        Message = "A new UPNP device description could not be loaded from {uri}. Exception: {ex}"
+        Message = "A new UPNP device description could not be loaded from {uri}."
         )]
     internal static partial void LogDescriptionLoadFailed(this ILogger logger, Uri uri, Exception ex);
 

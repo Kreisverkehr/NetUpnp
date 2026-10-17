@@ -98,8 +98,6 @@ public class UpnpClient : IUpnpClient
             var description = XDocument.Load(descStream);
             if (description is null) return;
 
-            _logger.LogDescriptionLoaded(e.Service.ServiceDescriptionLocation);
-
             DeviceDiscovered?.Invoke(this, new UpnpDeviceDiscoveredEventArgs(e.Service.ServiceDescriptionLocation, description));
         }
         catch (Exception ex)
