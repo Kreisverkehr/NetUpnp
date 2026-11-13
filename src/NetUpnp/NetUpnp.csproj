@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>Kreisverkehr.NetUpnp</PackageId>
+    <AssemblyName>Kreisverkehr.NetUpnp</AssemblyName>
     <Title>NetUpnp</Title>
     <Description>NetUpnp is a small .NET library for working with Universal Plug and Play (UPnP).</Description>
     <Summary>Lightweight .NET UPnP client library.</Summary>
@@ -22,10 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.13" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.13" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
-    <PackageReference Include="Kreisverkehr.NetSsdp" Version="0.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.14" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.14" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.14" />
+    <PackageReference Include="Kreisverkehr.NetSsdp" Version="0.2.0" />
   </ItemGroup>
 
 </Project>
